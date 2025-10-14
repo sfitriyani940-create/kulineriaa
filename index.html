@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kulineria Smanida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .modal { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease-in-out; z-index: 50; }
+        .modal-content { transition: transform 0.3s ease-in-out; }
+        .modal.hidden { opacity: 0; pointer-events: none; }
+        .modal.hidden .modal-content { transform: scale(0.95) translateY(10px); }
+        .cart-item-count { top: -10px; right: -10px; min-width: 24px; height: 24px; font-size: 0.8rem; line-height: 24px; transition: transform 0.2s ease-out; }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; transform: translate3d(0, 0, 0); }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        /* Menggunakan Amber/Kuning untuk rating */
+        .star-rating label { cursor: pointer; color: #d1d5db; transition: color 0.2s; }
+        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f59e0b; } /* Amber-500 */
+        .star-rating input { display: none; }
+        .star-rating { display: inline-flex; flex-direction: row-reverse; }
+        
+        /* Menggunakan Oranye untuk tombol aktif */
+        .tab-button { transition: all 0.2s ease-in-out; }
+        .tab-button.active { border-color: #f97316; color: #f97316; background-color: #fff7ed; } /* Orange-500 dan Orange-50 */
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Universal Login Screen -->
+    <div id="login-screen" class="w-full max-w-md">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 text-center">
+            <div class="flex justify-center items-center gap-3 mb-4">
+                <!-- Icon menggunakan warna Oranye -->
+                <svg class="w-10 h-10 text-orange-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 10.8284L14.8283 8L16.2425 9.41421L13.4141 12.2426L16.2425 15.071L14.8283 16.4852L11.9999 13.6568L9.17146 16.4852L7.75725 15.071L10.5857 12.2426L7.75725 9.41421L9.17146 8L11.9999 10.8284ZM11.9999 21C17.5227 21 21.9999 16.5228 21.9999 11C21.9999 5.47715 17.5227 1 11.9999 1C6.47705 1 1.99991 5.47715 1.99991 11C1.99991 16.5228 6.47705 21 11.9999 21Z"></path></svg>
+                <h1 class="text-4xl font-extrabold text-orange-600">Kulineria Smanida</h1>
+            </div>
+            <p class="text-gray-500 mb-8">Silakan masuk untuk melanjutkan.</p>
+            <form id="login-form" class="space-y-4">
+                <!-- Focus ring menggunakan warna Oranye -->
+                <input type="text" id="username-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Nama Pengguna" required>
+                <input type="password" id="password-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Kata Sandi" required>
+                <p id="login-error" class="text-red-500 text-sm hidden">Nama pengguna atau kata sandi salah!</p>
+                <!-- Tombol utama menggunakan warna Oranye -->
+                <button type="submit" class="w-full py-3 rounded-xl font-semibold text-white bg-orange-600 hover:bg-orange-700 transition-all">Masuk</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app-container" class="hidden container mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="p-6 md:p-8">
+            <header class="text-center mb-8 relative">
+                 <h1 class="text-4xl font-extrabold text-orange-600">Kulineria Smanida</h1>
+                <p class="text-gray-500 mt-2" id="header-subtitle">Pesan makanan favoritmu tanpa perlu antre!</p>
+                <div class="absolute top-0 right-0 flex gap-2">
+                     <button id="dashboard-btn" class="hidden py-2 px-4 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all">Dashboard</button>
+                    <button id="logout-btn" class="py-2 px-4 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">Logout</button>
+                </div>
+            </header>
+            <main>
+                <div id="main-content">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-700" id="menu-title">Menu Hari Ini</h2>
+                        <div id="cart-icon-wrapper" class="relative hidden">
+                            <!-- Ikon keranjang menggunakan warna Oranye -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-orange-600 cursor-pointer"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.536 0 2.891-1.286 3.142-2.822l.198-.946A3 3 0 0 0 19.141 8.25H7.5m9 6.75a3 3 0 0 1-3 3m3-3m-15.75-3.5h15.75" /></svg>
+                            <span id="cart-count" class="cart-item-count absolute bg-red-500 text-white rounded-full flex items-center justify-center font-bold transform scale-0">0</span>
+                        </div>
+                         <div id="seller-controls" class="hidden">
+                            <button id="add-menu-btn" class="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all">+ Tambah Menu</button>
+                        </div>
+                    </div>
+                    <div id="menu-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="admin-dashboard-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-orange-600">Dashboard Admin</h3>
+                <button class="close-modal-btn text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div class="p-6 flex-grow overflow-y-auto">
+                <div class="mb-6">
+                    <!-- Menggunakan bg-amber-50 (kuning muda) -->
+                    <form id="add-user-form" class="bg-amber-50 p-4 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <h4 class="text-lg font-semibold text-orange-800 col-span-full">Tambah Pengguna Baru</h4>
+                        <div><label class="block text-sm font-medium">Nama Pengguna</label><input type="text" id="new-username" class="w-full mt-1 p-2 border rounded" required></div>
+                        <div><label class="block text-sm font-medium">Kata Sandi</label><input type="password" id="new-password" class="w-full mt-1 p-2 border rounded" required></div>
+                        <div><label class="block text-sm font-medium">Peran</label><select id="new-role" class="w-full mt-1 p-2 border rounded"><option value="pembeli">Pembeli</option><option value="penjual">Penjual</option></select></div>
+                        <!-- Tombol menggunakan warna Oranye -->
+                        <button type="submit" class="bg-orange-600 text-white p-2 rounded hover:bg-orange-700">Tambah</button>
+                    </form>
+                </div>
+                <div>
+                     <h4 class="text-lg font-semibold text-orange-800 mb-2">Daftar Pengguna</h4>
+                    <div class="bg-gray-100 p-2 rounded-lg">
+                        <div class="grid grid-cols-4 font-bold text-sm text-gray-600 p-2"><p>Nama Pengguna</p><p>Peran</p><p>Nama Penjual (Jika Ada)</p><p>Aksi</p></div>
+                        <div id="user-list" class="space-y-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <div id="seller-dashboard-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
+             <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-orange-600">Dashboard Penjual</h3>
+                <button class="close-modal-btn text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div class="p-6 flex-grow overflow-y-auto">
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6">
+                    <p class="font-bold">Total Pendapatan</p>
+                    <p id="total-profit" class="text-3xl font-extrabold">Rp 0</p>
+                </div>
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">Detail Penjualan</h4>
+                <div id="sales-list" class="space-y-2">
+                    <p class="text-gray-500">Belum ada penjualan yang tercatat.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="cart-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden"><div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col"><div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-orange-600">Keranjang Belanja</h3><button class="close-modal-btn text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></button></div><div id="cart-body" class="p-6 flex-grow overflow-y-auto" style="max-height: 50vh;"><div id="cart-items-container"></div><div id="empty-cart-message" class="hidden text-center py-10"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-300 mx-auto mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.536 0 2.891-1.286 3.142-2.822l.198-.946A3 3 0 0 0 19.141 8.25H7.5" /></svg><p class="text-gray-500 font-semibold">Keranjang Anda kosong.</p></div></div><div id="cart-summary" class="p-6 border-t bg-gray-50 rounded-b-2xl"><div class="flex justify-between items-center text-xl font-bold mb-4"><span>Total:</span><span id="cart-total" class="text-orange-600">Rp 0</span></div><button id="checkout-btn" class="w-full py-3 rounded-xl font-semibold text-white bg-orange-600 hover:bg-orange-700 transition-all flex items-center justify-center gap-2 disabled:bg-orange-400">Bayar Sekarang</button></div></div></div>
+
+    <div id="qris-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm text-center">
+            <div class="p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-orange-600 mb-2">Scan QRIS untuk Membayar</h3>
+                <p class="text-gray-500 mb-4">Total: <strong id="qris-total" class="text-gray-800"></strong> | Nama: <strong id="qris-name" class="text-gray-800"></strong></p>
+                <img id="qris-image" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=KULINERIA-SMANIDA-DEMO" alt="QRIS Code" class="mx-auto rounded-lg shadow-md border">
+                <p class="text-xs text-gray-400 mt-2 mb-6">*Ini adalah QRIS demo.</p>
+                <button id="confirm-payment-btn" class="w-full py-3 px-4 rounded-xl font-semibold text-white bg-green-600 hover:bg-green-700 transition-all">Saya Sudah Bayar</button>
+                <button type="button" id="cancel-qris-btn" class="mt-3 w-full py-2 px-4 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300">Batal</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="payment-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden"><div class="modal-content bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-sm text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-green-500 mx-auto mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg><h3 class="text-2xl font-bold mb-2">Pemesanan Berhasil!</h3><p class="text-gray-500 mb-6">Pesanan Anda sedang diproses. Terima kasih!</p><button id="close-payment-modal-btn" class="w-full py-3 px-4 rounded-xl font-semibold text-white bg-orange-600 hover:bg-orange-700 transition-all">Beri Ulasan</button></div></div>
+
+    <div id="rating-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <form id="rating-form" class="p-6">
+                <h3 class="text-2xl font-bold text-orange-600 mb-4 text-center">Beri Ulasan Pesanan Anda</h3>
+                <div id="rating-items-container" class="space-y-4 max-h-64 overflow-y-auto pr-2"></div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" id="skip-rating-btn" class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Lewati</button>
+                    <button type="submit" class="py-2 px-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700">Kirim Ulasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="menu-form-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden"><div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md"><form id="menu-form" class="p-6"><h3 id="menu-form-title" class="text-2xl font-bold text-orange-600 mb-6">Tambah Menu Baru</h3><input type="hidden" id="menu-id"><div class="space-y-4"><div><label for="menu-name" class="block text-sm font-medium text-gray-700">Nama Menu</label><input type="text" id="menu-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div><div><label for="menu-price" class="block text-sm font-medium text-gray-700">Harga</label><input type="number" id="menu-price" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div><div><label for="menu-img" class="block text-sm font-medium text-gray-700">URL Gambar</label><input type="text" id="menu-img" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div></div><div class="mt-6 flex justify-end gap-3"><button type="button" class="close-modal-btn py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Batal</button><button type="submit" class="py-2 px-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700">Simpan</button></div></form></div></div>
+
+    <div id="confirm-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm"><div class="p-6 md:p-8 text-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><h3 id="confirm-modal-title" class="text-xl font-bold text-gray-800 mb-2">Konfirmasi Aksi</h3><p id="confirm-modal-text" class="text-gray-500 mb-6">Apakah Anda yakin?</p><div class="flex justify-center gap-4"><button id="cancel-confirm-btn" class="w-full py-2 px-4 rounded-xl font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 transition-all">Batal</button><button id="confirm-action-btn" class="w-full py-2 px-4 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all">Ya, Lanjutkan</button></div></div></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE & CONFIG ---
+            let currentUser = null;
+            let cart = {};
+            let menu = [];
+            let users = {};
+            let orders = [];
+            let confirmCallback = () => {};
+            let lastOrder = { items: [], studentName: '' };
+            
+            const defaultData = {
+                users: {
+                    'admin': { password: 'admin', role: 'admin' },
+                    'penjual1': { password: 'penjual1', role: 'penjual', name: 'Kantin Bu Ida' },
+                    'penjual2': { password: 'penjual2', role: 'penjual', name: 'Kantin Pak Budi' },
+                    'pembeli1': { password: 'pembeli1', role: 'pembeli' },
+                },
+                menu: [
+                    { id: 1, name: 'Nasi Goreng Spesial', seller: 'Kantin Bu Ida', price: 15000, img: 'https://placehold.co/300x200/e0e7ff/4338ca?text=Nasi+Goreng', ratings: [] },
+                    { id: 2, name: 'Ayam Geprek', seller: 'Kantin Pak Budi', price: 18000, img: 'https://placehold.co/300x200/ede9fe/7c3aed?text=Ayam+Geprek', ratings: [] },
+                    { id: 3, name: 'Mie Ayam Bakso', seller: 'Kantin Bu Ida', price: 17000, img: 'https://placehold.co/300x200/e0e7ff/4338ca?text=Mie+Ayam', ratings: [] },
+                ],
+                orders: []
+            };
+
+            // --- DOM ELEMENTS ---
+            const loginScreen = document.getElementById('login-screen');
+            const appContainer = document.getElementById('app-container');
+            const loginForm = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username-input');
+            const passwordInput = document.getElementById('password-input');
+            const loginError = document.getElementById('login-error');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            const menuList = document.getElementById('menu-list');
+            const menuTitle = document.getElementById('menu-title');
+            const headerSubtitle = document.getElementById('header-subtitle');
+            const cartIconWrapper = document.getElementById('cart-icon-wrapper');
+            const sellerControls = document.getElementById('seller-controls');
+            const addMenuBtn = document.getElementById('add-menu-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const cartCount = document.getElementById('cart-count');
+            // Modals
+            const allModals = document.querySelectorAll('.modal');
+            const adminDashboardModal = document.getElementById('admin-dashboard-modal');
+            const sellerDashboardModal = document.getElementById('seller-dashboard-modal');
+            const cartModal = document.getElementById('cart-modal');
+            const qrisModal = document.getElementById('qris-modal');
+            const paymentModal = document.getElementById('payment-modal');
+            const ratingModal = document.getElementById('rating-modal');
+            const menuFormModal = document.getElementById('menu-form-modal');
+            const confirmModal = document.getElementById('confirm-modal');
+            
+            // --- FUNCTIONS ---
+            const saveData = () => {
+                localStorage.setItem('kulineriaUsers', JSON.stringify(users));
+                localStorage.setItem('kulineriaMenu', JSON.stringify(menu));
+                localStorage.setItem('kulineriaOrders', JSON.stringify(orders));
+                localStorage.setItem(`kulineriaCart_${currentUser?.username}`, JSON.stringify(cart));
+            };
+
+            const loadData = () => {
+                users = JSON.parse(localStorage.getItem('kulineriaUsers')) || defaultData.users;
+                menu = JSON.parse(localStorage.getItem('kulineriaMenu')) || defaultData.menu;
+                orders = JSON.parse(localStorage.getItem('kulineriaOrders')) || defaultData.orders;
+                if(currentUser){
+                    cart = JSON.parse(localStorage.getItem(`kulineriaCart_${currentUser?.username}`)) || {};
+                }
+            };
+            
+            const initDefaultData = () => {
+                if(!localStorage.getItem('kulineriaUsers')) {
+                    localStorage.setItem('kulineriaUsers', JSON.stringify(defaultData.users));
+                    localStorage.setItem('kulineriaMenu', JSON.stringify(defaultData.menu));
+                    localStorage.setItem('kulineriaOrders', JSON.stringify(defaultData.orders));
+                }
+            }
+            
+            const showModal = (modalElement) => modalElement.classList.remove('hidden');
+            const hideModal = (modalElement) => modalElement.classList.add('hidden');
+            const formatCurrency = (amount) => `Rp ${amount.toLocaleString('id-ID')}`;
+            const showScreen = (screenName) => {
+                loginScreen.classList.add('hidden');
+                appContainer.classList.add('hidden');
+                document.getElementById(screenName).classList.remove('hidden');
+            };
+
+            const setupUIForRole = () => {
+                loadData();
+                dashboardBtn.classList.add('hidden');
+                cartIconWrapper.classList.add('hidden');
+                sellerControls.classList.add('hidden');
+                
+                if (currentUser.role === 'admin') {
+                    headerSubtitle.textContent = `Selamat datang, Admin!`;
+                    menuTitle.textContent = 'Semua Menu (Tampilan Admin)';
+                    dashboardBtn.textContent = 'Kelola Pengguna';
+                    dashboardBtn.classList.remove('hidden');
+                } else if (currentUser.role === 'penjual') {
+                    headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`;
+                    menuTitle.textContent = `Menu Anda`;
+                    sellerControls.classList.remove('hidden');
+                    dashboardBtn.textContent = 'Dashboard Penjualan';
+                    dashboardBtn.classList.remove('hidden');
+                } else if (currentUser.role === 'pembeli') {
+                     headerSubtitle.textContent = `Halo ${currentUser.username}, mau jajan apa hari ini?`;
+                     menuTitle.textContent = 'Menu Hari Ini';
+                     cartIconWrapper.classList.remove('hidden');
+                }
+                renderMenu();
+                updateCartSummary();
+            };
+
+            const login = (username, password) => {
+                const user = users[username];
+                if (user && user.password === password) {
+                    currentUser = { username, ...user };
+                    showScreen('app-container');
+                    setupUIForRole();
+                    return true;
+                }
+                return false;
+            };
+            
+            const logout = () => {
+                saveData();
+                currentUser = null;
+                cart = {};
+                showScreen('login-screen');
+                usernameInput.value = '';
+                passwordInput.value = '';
+                loginError.classList.add('hidden');
+            };
+
+            const calculateAverageRating = (ratings) => {
+                if (!ratings || ratings.length === 0) return { avg: 0, count: 0 };
+                const total = ratings.reduce((sum, r) => sum + r.rating, 0);
+                return { avg: (total / ratings.length).toFixed(1), count: ratings.length };
+            };
+
+            // Menggunakan warna Amber-500 (#f59e0b) untuk bintang
+            const renderStars = (rating) => Array.from({length: 5}, (_, i) => `<svg class="w-4 h-4 ${i < rating ? 'text-amber-500' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`).join('');
+
+            const renderMenu = () => {
+                let menuToRender = menu;
+                if(currentUser.role === 'penjual'){
+                    menuToRender = menu.filter(item => item.seller === currentUser.name);
+                }
+
+                if(menuToRender.length === 0 && currentUser.role === 'penjual'){
+                     menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">Anda belum memiliki menu. Silakan klik tombol "+ Tambah Menu" untuk memulai.</p></div>`;
+                     return;
+                }
+
+                menuList.innerHTML = menuToRender.map(item => {
+                    const ratingInfo = calculateAverageRating(item.ratings);
+                    let buttonsHTML = '';
+
+                    if (currentUser.role === 'pembeli') {
+                        // Tombol beli menggunakan warna Oranye
+                        buttonsHTML = `<button class="add-to-cart-btn w-full mt-auto py-2 px-4 rounded-lg font-semibold text-sm text-white bg-orange-600 hover:bg-orange-700 transition-all" data-id="${item.id}">+ Keranjang</button>`;
+                    } else if (currentUser.role === 'penjual') {
+                        // Tombol edit menggunakan warna Biru (tetap) dan Hapus menggunakan Merah (tetap)
+                        buttonsHTML = `<div class="flex gap-2 mt-auto"><button class="edit-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-blue-500 hover:bg-blue-600" data-id="${item.id}">Edit</button><button class="delete-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-500 hover:bg-red-600" data-id="${item.id}">Hapus</button></div>`;
+                    }
+
+                    return `<div class="card rounded-2xl p-4 shadow-md flex flex-col bg-white transition-transform transform hover:-translate-y-1">
+                        <img src="${item.img}" alt="${item.name}" class="rounded-lg mb-4 w-full h-40 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x200/ccc/ffffff?text=Error';">
+                        <div class="flex flex-col flex-grow">
+                            <p class="text-xs font-semibold text-orange-600">${item.seller}</p>
+                            <h3 class="font-bold text-lg text-gray-800">${item.name}</h3>
+                            <div class="flex items-center my-2 gap-1">${renderStars(ratingInfo.avg)} <span class="text-xs text-gray-500">(${ratingInfo.avg} / ${ratingInfo.count})</span></div>
+                            <p class="text-gray-600 mb-4 flex-grow font-semibold">${formatCurrency(item.price)}</p>
+                            ${buttonsHTML}
+                        </div>
+                    </div>`;
+                }).join('');
+            };
+            
+            const updateCartSummary = () => {
+                let total = 0, itemCount = 0;
+                for (const itemId in cart) {
+                    const menuItem = menu.find(m => m.id === parseInt(itemId));
+                    if (menuItem) {
+                        total += menuItem.price * cart[itemId].quantity;
+                        itemCount += cart[itemId].quantity;
+                    }
+                }
+                document.getElementById('cart-total').textContent = formatCurrency(total);
+                cartCount.textContent = itemCount;
+                cartCount.classList.toggle('scale-0', itemCount === 0);
+                cartCount.classList.toggle('scale-100', itemCount > 0);
+                document.getElementById('checkout-btn').disabled = itemCount === 0;
+                return total;
+            };
+            
+            const showConfirmModal = (title, text, onConfirm) => {
+                document.getElementById('confirm-modal-title').textContent = title;
+                document.getElementById('confirm-modal-text').textContent = text;
+                confirmCallback = onConfirm;
+                showModal(confirmModal);
+            };
+
+            const openMenuFormModal = (mode, itemId = null) => {
+                const form = document.getElementById('menu-form');
+                form.reset();
+                const title = document.getElementById('menu-form-title');
+                if (mode === 'edit') {
+                    const item = menu.find(m => m.id === itemId);
+                    if (!item) return;
+                    title.textContent = 'Edit Menu';
+                    document.getElementById('menu-id').value = item.id;
+                    document.getElementById('menu-name').value = item.name;
+                    document.getElementById('menu-price').value = item.price;
+                    document.getElementById('menu-img').value = item.img;
+                } else {
+                    title.textContent = 'Tambah Menu Baru';
+                    document.getElementById('menu-id').value = '';
+                }
+                showModal(menuFormModal);
+            };
+
+            // --- DASHBOARD RENDERING ---
+            const renderAdminDashboard = () => {
+                const userList = document.getElementById('user-list');
+                userList.innerHTML = Object.keys(users).filter(u => u !== 'admin').map(username => {
+                    const user = users[username];
+                    return `<div class="grid grid-cols-4 items-center bg-white p-2 rounded text-sm">
+                        <span>${username}</span>
+                        <span class="capitalize">${user.role}</span>
+                        <span>${user.name || '-'}</span>
+                        <button data-username="${username}" class="delete-user-btn text-red-500 hover:text-red-700 justify-self-start">Hapus</button>
+                    </div>`;
+                }).join('');
+                showModal(adminDashboardModal);
+            };
+
+            const renderSellerDashboard = () => {
+                const sellerOrders = orders.flatMap(order => 
+                    order.items
+                        .filter(item => item.seller === currentUser.name)
+                        .map(item => ({...item, buyer: order.buyer, date: order.date}))
+                );
+                
+                const totalProfit = sellerOrders.reduce((total, item) => total + (item.price * item.quantity), 0);
+                document.getElementById('total-profit').textContent = formatCurrency(totalProfit);
+                
+                const salesList = document.getElementById('sales-list');
+                if(sellerOrders.length > 0) {
+                    salesList.innerHTML = sellerOrders.map(item => `
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <div class="flex justify-between font-semibold">
+                                <span>${item.name} (x${item.quantity})</span>
+                                <span>${formatCurrency(item.price * item.quantity)}</span>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Dipesan oleh: ${item.buyer} pada ${new Date(item.date).toLocaleDateString('id-ID')}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                     salesList.innerHTML = `<p class="text-gray-500">Belum ada penjualan yang tercatat.</p>`;
+                }
+                showModal(sellerDashboardModal);
+            };
+
+
+            // --- EVENT LISTENERS ---
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+                if (!login(username, password)) {
+                    loginError.classList.remove('hidden');
+                } else {
+                    loginError.classList.add('hidden');
+                }
+            });
+
+            logoutBtn.addEventListener('click', logout);
+            
+            dashboardBtn.addEventListener('click', () => {
+                if(currentUser.role === 'admin') renderAdminDashboard();
+                if(currentUser.role === 'penjual') renderSellerDashboard();
+            });
+
+            menuList.addEventListener('click', (e) => {
+                const button = e.target.closest('[data-id]');
+                if (!button) return;
+                const id = parseInt(button.dataset.id);
+
+                if (button.classList.contains('add-to-cart-btn')) {
+                    cart[id] = cart[id] ? { quantity: cart[id].quantity + 1 } : { quantity: 1 };
+                    button.textContent = 'Ditambahkan ✓';
+                    setTimeout(() => { button.textContent = '+ Keranjang'; }, 1000);
+                    cartIconWrapper.classList.add('shake');
+                    setTimeout(() => cartIconWrapper.classList.remove('shake'), 500);
+                    saveData();
+                    updateCartSummary();
+                } else if (button.classList.contains('edit-btn')) {
+                    openMenuFormModal('edit', id);
+                } else if (button.classList.contains('delete-btn')) {
+                     const item = menu.find(i => i.id === id);
+                     showConfirmModal('Konfirmasi Hapus', `Yakin ingin menghapus "${item.name}"?`, () => {
+                        menu = menu.filter(i => i.id !== id);
+                        saveData();
+                        renderMenu();
+                     });
+                }
+            });
+
+            document.getElementById('menu-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('menu-id').value;
+                const newMenuData = {
+                    name: document.getElementById('menu-name').value,
+                    price: parseInt(document.getElementById('menu-price').value),
+                    img: document.getElementById('menu-img').value,
+                    seller: currentUser.name
+                };
+
+                if (id) {
+                    const index = menu.findIndex(item => item.id === parseInt(id));
+                    if (index !== -1) menu[index] = { ...menu[index], ...newMenuData };
+                } else {
+                    newMenuData.id = menu.length ? Math.max(...menu.map(item => item.id)) + 1 : 1;
+                    newMenuData.ratings = [];
+                    menu.push(newMenuData);
+                }
+                saveData();
+                renderMenu();
+                hideModal(menuFormModal);
+            });
+            
+            document.getElementById('checkout-btn').addEventListener('click', () => {
+                hideModal(cartModal);
+                document.getElementById('qris-name').textContent = currentUser.username;
+                const total = updateCartSummary();
+                document.getElementById('qris-total').textContent = formatCurrency(total);
+                const qrData = encodeURIComponent(`Pembayaran Kulineria Smanida\nNama: ${currentUser.username}\nTotal: ${total}`);
+                document.getElementById('qris-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrData}`;
+                showModal(qrisModal);
+            });
+
+            document.getElementById('confirm-payment-btn').addEventListener('click', () => {
+                hideModal(qrisModal);
+                showModal(paymentModal);
+                lastOrder.items = Object.keys(cart).map(id => ({...menu.find(m => m.id === parseInt(id)), quantity: cart[id].quantity })).filter(Boolean);
+                lastOrder.studentName = currentUser.username;
+                
+                orders.push({
+                    buyer: currentUser.username,
+                    items: lastOrder.items,
+                    date: new Date().toISOString()
+                });
+                
+                cart = {};
+                saveData();
+                updateCartSummary();
+            });
+            
+            document.getElementById('close-payment-modal-btn').addEventListener('click', () => {
+                hideModal(paymentModal);
+                if (lastOrder.items.length > 0) {
+                     document.getElementById('rating-items-container').innerHTML = lastOrder.items.map(item => `
+                        <div class="p-3 bg-gray-100 rounded-lg">
+                            <p class="font-semibold text-gray-800">${item.name}</p>
+                            <div class="my-2"><div class="star-rating" data-item-id="${item.id}"><input type="radio" id="5-stars-${item.id}" name="rating-${item.id}" value="5" /><label for="5-stars-${item.id}">&#9733;</label><input type="radio" id="4-stars-${item.id}" name="rating-${item.id}" value="4" /><label for="4-stars-${item.id}">&#9733;</label><input type="radio" id="3-stars-${item.id}" name="rating-${item.id}" value="3" /><label for="3-stars-${item.id}">&#9733;</label><input type="radio" id="2-stars-${item.id}" name="rating-${item.id}" value="2" /><label for="2-stars-${item.id}">&#9733;</label><input type="radio" id="1-star-${item.id}" name="rating-${item.id}" value="1" /><label for="1-star-${item.id}">&#9733;</label></div></div>
+                            <textarea class="review-text w-full p-2 border rounded-md text-sm" data-item-id="${item.id}" placeholder="Tulis ulasan Anda (opsional)"></textarea>
+                        </div>
+                    `).join('');
+                    showModal(ratingModal);
+                }
+            });
+
+            document.getElementById('rating-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('#rating-items-container .star-rating').forEach(container => {
+                    const itemId = container.dataset.itemId;
+                    const ratingInput = container.querySelector('input:checked');
+                    if(ratingInput) {
+                        const reviewText = document.querySelector(`.review-text[data-item-id="${itemId}"]`).value;
+                        const menuItem = menu.find(m => m.id === parseInt(itemId));
+                        if(menuItem) {
+                            menuItem.ratings.push({ rating: parseInt(ratingInput.value), review: reviewText, name: lastOrder.studentName });
+                        }
+                    }
+                });
+                saveData();
+                renderMenu();
+                hideModal(ratingModal);
+                lastOrder = { items: [], studentName: '' };
+            });
+
+            // Admin dashboard listeners
+             document.getElementById('add-user-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('new-username').value;
+                const password = document.getElementById('new-password').value;
+                const role = document.getElementById('new-role').value;
+                
+                if(users[username]){
+                    alert('Nama pengguna sudah ada!');
+                    return;
+                }
+                
+                users[username] = { password, role };
+                if(role === 'penjual'){
+                    const sellerName = prompt(`Masukkan nama kantin/penjual untuk ${username}:`);
+                    users[username].name = sellerName || username;
+                }
+                saveData();
+                renderAdminDashboard();
+                e.target.reset();
+            });
+
+            document.getElementById('user-list').addEventListener('click', e => {
+                if(e.target.classList.contains('delete-user-btn')){
+                    const username = e.target.dataset.username;
+                    showConfirmModal('Konfirmasi Hapus', `Yakin ingin menghapus pengguna "${username}"?`, () => {
+                        delete users[username];
+                        saveData();
+                        renderAdminDashboard();
+                    });
+                }
+            });
+
+
+            // General Modal & Cart Logic
+            addMenuBtn.addEventListener('click', () => openMenuFormModal('add'));
+            
+            cartIconWrapper.addEventListener('click', () => {
+                const itemsHtml = Object.keys(cart).map(itemId => { 
+                    const menuItem = menu.find(m => m.id === parseInt(itemId)); 
+                    if (!menuItem) return ''; 
+                    return `<div class="flex justify-between items-center mb-4 p-3 rounded-lg bg-gray-100">
+                        <div class="flex items-center gap-3">
+                            <img src="${menuItem.img}" class="w-12 h-12 object-cover rounded-md"/>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${menuItem.name}</h4>
+                                <p class="text-sm text-gray-500">${formatCurrency(menuItem.price)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <!-- Tombol quantity menggunakan warna Oranye -->
+                            <button class="update-quantity-btn py-1 px-2 text-orange-600 hover:text-orange-800" data-id="${itemId}" data-action="minus">-</button>
+                            <span class="font-medium">${cart[itemId].quantity}</span>
+                            <button class="update-quantity-btn py-1 px-2 text-orange-600 hover:text-orange-800" data-id="${itemId}" data-action="plus">+</button>
+                            <button class="remove-item-btn ml-2 text-red-500 hover:text-red-700 font-bold" data-id="${itemId}">&times;</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                document.getElementById('cart-items-container').innerHTML = itemsHtml;
+                document.getElementById('empty-cart-message').classList.toggle('hidden', Object.keys(cart).length > 0);
+                document.getElementById('cart-summary').classList.toggle('hidden', Object.keys(cart).length === 0);
+                updateCartSummary();
+                showModal(cartModal);
+            });
+            
+            document.getElementById('cart-items-container').addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                const id = button.dataset.id;
+                
+                if (button.classList.contains('update-quantity-btn')) {
+                    if (button.dataset.action === 'plus') {
+                        cart[id].quantity++;
+                    } else if (button.dataset.action === 'minus') {
+                        cart[id].quantity--;
+                        if (cart[id].quantity <= 0) {
+                            delete cart[id];
+                        }
+                    }
+                } 
+                
+                if (button.classList.contains('remove-item-btn')) {
+                    delete cart[id];
+                }
+                
+                saveData();
+                document.dispatchEvent(new Event('cartUpdated'));
+            });
+            
+            document.addEventListener('cartUpdated', () => {
+                // Periksa apakah modal keranjang terbuka, lalu update tampilannya
+                const container = document.getElementById('cart-items-container');
+                if (cartModal.classList.contains('hidden') === false) {
+                     cartIconWrapper.click(); // Hackish way to re-render cart content without complex logic
+                }
+                updateCartSummary();
+            });
+
+            allModals.forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target.classList.contains('modal') || e.target.closest('.close-modal-btn')) hideModal(modal);
+                });
+            });
+            document.getElementById('cancel-qris-btn').addEventListener('click', () => { hideModal(qrisModal); showModal(cartModal); });
+            document.getElementById('skip-rating-btn').addEventListener('click', () => { hideModal(ratingModal); lastOrder = { items: [], studentName: '' }; });
+            document.getElementById('confirm-action-btn').addEventListener('click', () => { if(typeof confirmCallback === 'function') confirmCallback(); hideModal(confirmModal); });
+            
+            document.getElementById('cancel-confirm-btn').addEventListener('click', () => hideModal(confirmModal));
+            
+            // --- INITIALIZATION ---
+            initDefaultData();
+            loadData();
+        });
+    </script>
+</body>
+</html>
