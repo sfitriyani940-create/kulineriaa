@@ -7,8 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #FFF7ED; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@800&family=Pacifico&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #FEF2F2; } /* red-50 */
+        .font-title { font-family: 'Poppins', sans-serif; }
+        .font-subtitle { font-family: 'Pacifico', cursive; }
         .modal { background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
         .card { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); }
         .shake { animation: shake 0.5s; }
@@ -17,6 +19,12 @@
         .star-rating input { display: none; }
         .star-rating label { font-size: 24px; color: #ccc; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #facc15; }
+        .food-icon {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -24,24 +32,37 @@
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 hidden">
         <div class="flex flex-col items-center p-6 bg-white rounded-xl shadow-2xl">
-            <svg class="animate-spin h-8 w-8 text-orange-600 mb-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <svg class="animate-spin h-8 w-8 text-red-600 mb-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             <span class="text-gray-700 font-medium">Memproses...</span>
         </div>
     </div>
 
     <!-- 1. Login Screen -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-orange-50">
-        <div class="w-full max-w-sm p-8 bg-white rounded-2xl shadow-xl">
-            <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Kulineria Smanida</h2>
-            <p class="text-sm text-gray-500 text-center mb-6">Sistem Pemesanan Kantin Digital</p>
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-red-50 relative overflow-hidden">
+        <!-- Hiasan Makanan di Latar Belakang -->
+        <!--  -->
+        <svg class="food-icon w-32 h-32 text-red-200 top-10 left-10 transform -rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C11.17 2 10.5 2.67 10.5 3.5V6H4.5C3.67 6 3 6.67 3 7.5V10.5C3 11.33 3.67 12 4.5 12H19.5C20.33 12 21 11.33 21 10.5V7.5C21 6.67 20.33 6 19.5 6H13.5V3.5C13.5 2.67 12.83 2 12 2ZM5 14C4.45 14 4 14.45 4 15V21H6V15C6 14.45 5.55 14 5 14ZM9 14C8.45 14 8 14.45 8 15V21H10V15C10 14.45 9.55 14 9 14ZM12 14C11.45 14 11 14.45 11 15V21H13V15C13 14.45 12.55 14 12 14ZM15 14C14.45 14 14 14.45 14 15V21H16V15C16 14.45 15.55 14 15 14ZM19 14C18.45 14 18 14.45 18 15V21H20V15C20 14.45 19.55 14 19 14Z" /></svg>
+        <svg class="food-icon w-24 h-24 text-amber-200 bottom-16 right-12 transform rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.78 11.78L18.36 10.36L19.78 8.95C20.56 8.17 20.56 6.9 19.78 6.12L17.88 4.22C17.1 3.44 15.83 3.44 15.05 4.22L13.64 5.64L15.05 7.05L16.46 5.64L17.17 6.34L15.76 7.76L17.17 9.17L18.59 7.76L19.29 8.46L17.88 9.88L19.29 11.29L20.71 9.88L21.41 10.59L20 12L18.59 10.59L17.17 12L15.76 10.59L14.34 12L12.93 10.59L11.5 12L10.09 10.59L8.68 12L7.27 10.59L5.86 12L4.45 10.59L3.03 12L1.62 10.59L4.45 7.76L3.03 6.34L2.33 7.05L3.74 8.46L2.33 9.88L3.74 11.29L5.16 9.88L5.86 10.59L7.27 9.17L5.86 7.76L7.27 6.34L8.68 7.76L10.09 6.34L11.5 7.76L12.91 6.34L14.33 7.76L15.74 6.34L14.33 4.93L15.03 4.22L16.45 5.64L17.86 4.22L18.57 4.93L17.15 6.34L18.57 7.76L20 6.34L20.71 7.05L19.29 8.46L20.71 9.88L22.12 8.46C22.9 7.68 22.9 6.41 22.12 5.64L20.22 3.73C19.44 2.95 18.17 2.95 17.39 3.73L16 5.12V4C16 3.45 15.55 3 15 3H8C7.45 3 7 3.45 7 4V13.27L2.73 17.54C2.15 18.12 2.15 19.07 2.73 19.65L3.09 20.01C3.67 20.59 4.62 20.59 5.2 20.01L9.47 15.74H18C18.55 15.74 19 15.29 19 14.74V13H19.78C20.56 13 21.18 12.38 21.18 11.6C21.18 11.23 21.01 10.88 20.73 10.6L19.78 11.78Z"/></svg>
+
+        <div class="w-full max-w-sm p-8 bg-white rounded-2xl shadow-xl z-10 text-center">
+             <!-- Ikon Utama -->
+             <div class="flex justify-center items-center mb-4">
+                 <svg class="w-16 h-16 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.362-3.797z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214C15.63 5.372 15.89 5.544 16.138 5.728 17.935 7.166 19.5 9.358 19.5 12a8.25 8.25 0 01-5.962 7.952 8.257 8.257 0 01-1.28-1.427z" />
+                 </svg>
+            </div>
+            
+            <h2 class="text-4xl font-extrabold text-gray-900 font-title">Kulineria Smanida</h2>
+            <p class="text-2xl text-orange-500 mt-2 mb-8 font-subtitle">Jajanan favorit, tinggal klik!</p>
             
             <form id="login-form" class="space-y-4">
-                <input type="text" id="username-input" placeholder="Username" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500">
-                <input type="password" id="password-input" placeholder="Password" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500">
+                <input type="text" id="username-input" placeholder="Username" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-red-500 focus:border-red-500">
+                <input type="password" id="password-input" placeholder="Password" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-red-500 focus:border-red-500">
                 
                 <p id="login-error" class="text-red-600 text-sm hidden">Login gagal. Cek username dan password.</p>
                 
-                <button type="submit" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition duration-150 shadow-md">
+                <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition duration-150 shadow-md">
                     Masuk
                 </button>
             </form>
@@ -59,7 +80,7 @@
                 </div>
 
                 <div class="flex items-center space-x-3">
-                    <button id="dashboard-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition shadow-md">
+                    <button id="dashboard-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-orange-800 text-white hover:bg-orange-900 transition shadow-md">
                         Dashboard
                     </button>
                     
@@ -71,7 +92,7 @@
 
                     <!-- Cart Icon -->
                     <div id="cart-icon-wrapper" class="relative cursor-pointer hidden">
-                        <svg class="w-8 h-8 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+                        <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full transform scale-0 origin-top-right">0</span>
                     </div>
 
@@ -103,9 +124,9 @@
                 <div id="cart-summary" class="mt-6 pt-4 border-t border-gray-200">
                     <div class="flex justify-between items-center font-bold text-xl mb-4">
                         <span>Total:</span>
-                        <span id="cart-total" class="text-orange-600">Rp 0</span>
+                        <span id="cart-total" class="text-red-600">Rp 0</span>
                     </div>
-                    <button id="checkout-btn" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition" disabled>Lanjutkan Pembayaran</button>
+                    <button id="checkout-btn" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition" disabled>Lanjutkan Pembayaran</button>
                 </div>
             </div>
         </div>
@@ -120,7 +141,7 @@
                     <label class="block"><span class="text-gray-700">Nama Makanan</span><input type="text" id="menu-name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
                     <label class="block"><span class="text-gray-700">Harga (Rp)</span><input type="number" id="menu-price" required min="1000" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
                     <label class="block"><span class="text-gray-700">URL Gambar</span><input type="url" id="menu-img" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" value="https://placehold.co/300x200/fb923c/ffffff?text=Makanan"></label>
-                    <button type="submit" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-md">Simpan Menu</button>
+                    <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-md">Simpan Menu</button>
                 </form>
             </div>
         </div>
@@ -152,7 +173,7 @@
                         <input type="text" id="user-name" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
                     </label>
                     <p class="text-xs text-gray-500">Password wajib diisi bahkan saat mengedit untuk konfirmasi.</p>
-                    <button type="submit" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-md">Simpan Pengguna</button>
+                    <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-md">Simpan Pengguna</button>
                 </form>
             </div>
         </div>
@@ -174,12 +195,12 @@
              <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-800">Pembayaran QRIS</h3>
                 <p class="text-gray-600 mb-6">Silakan scan kode di bawah. <span class="font-semibold">Ini adalah simulasi.</span></p>
-                <img id="qris-image" src="" alt="QR Code Payment" class="w-60 h-60 mx-auto rounded-lg border-4 border-orange-200 p-2 my-4">
-                <div class="bg-orange-50 p-4 rounded-xl mb-6">
+                <img id="qris-image" src="" alt="QR Code Payment" class="w-60 h-60 mx-auto rounded-lg border-4 border-red-200 p-2 my-4">
+                <div class="bg-red-50 p-4 rounded-xl mb-6">
                     <p class="text-sm text-gray-600">Nama Pembeli:</p>
-                    <p id="qris-name" class="font-semibold text-lg text-orange-800 mb-2">Nama Siswa</p>
+                    <p id="qris-name" class="font-semibold text-lg text-orange-900 mb-2">Nama Siswa</p>
                     <p class="text-sm text-gray-600">Total Pembayaran:</p>
-                    <p id="qris-total" class="font-bold text-2xl text-orange-600">Rp 0</p>
+                    <p id="qris-total" class="font-bold text-2xl text-red-600">Rp 0</p>
                 </div>
                 <div class="flex justify-center space-x-3">
                     <button id="cancel-qris-btn" class="py-3 px-6 rounded-xl text-gray-700 border border-gray-300 hover:bg-gray-100 transition">Batal</button>
@@ -194,7 +215,7 @@
                 <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                 <h3 class="text-2xl font-bold mb-2 text-gray-800">Pembayaran Berhasil!</h3>
                 <p class="text-gray-600 mb-6">Pesanan Anda telah dikirim ke kantin.</p>
-                <button id="close-payment-modal-btn" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-md">Selesai & Beri Ulasan</button>
+                <button id="close-payment-modal-btn" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-md">Selesai & Beri Ulasan</button>
             </div>
         </div>
 
@@ -206,7 +227,7 @@
                     <div id="rating-items-container" class="space-y-4 max-h-80 overflow-y-auto pr-2"></div>
                     <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                         <button type="button" id="skip-rating-btn" class="py-2 px-4 rounded-lg text-gray-700 border border-gray-300 hover:bg-gray-100 transition">Lewati</button>
-                        <button type="submit" class="py-2 px-4 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition">Kirim Ulasan</button>
+                        <button type="submit" class="py-2 px-4 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition">Kirim Ulasan</button>
                     </div>
                 </form>
             </div>
@@ -387,7 +408,7 @@
                 let buttonsHTML = '';
 
                 if (currentUser.role === 'pembeli') {
-                    buttonsHTML = `<button class="add-to-cart-btn w-full mt-auto py-2 px-4 rounded-lg font-semibold text-sm text-white bg-orange-600 hover:bg-orange-700 transition-all" data-id="${item.id}">+ Keranjang</button>`;
+                    buttonsHTML = `<button class="add-to-cart-btn w-full mt-auto py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-600 hover:bg-red-700 transition-all" data-id="${item.id}">+ Keranjang</button>`;
                 } else if (currentUser.role === 'penjual' && item.seller === currentUser.name) {
                     buttonsHTML = `<div class="flex gap-2 mt-auto"><button class="edit-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-blue-500 hover:bg-blue-600" data-id="${item.id}">Edit</button><button class="delete-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-500 hover:bg-red-600" data-id="${item.id}">Hapus</button></div>`;
                 }
@@ -395,7 +416,7 @@
                 return `<div class="card rounded-2xl p-4 shadow-md flex flex-col bg-white transition-transform transform hover:-translate-y-1">
                     <img src="${item.img}" alt="${item.name}" class="rounded-lg mb-4 w-full h-40 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x200/ccc/ffffff?text=Error';">
                     <div class="flex flex-col flex-grow">
-                        <p class="text-xs font-semibold text-orange-600">${item.seller}</p>
+                        <p class="text-xs font-semibold text-orange-800">${item.seller}</p>
                         <h3 class="font-bold text-lg text-gray-800">${item.name}</h3>
                         <div class="flex items-center my-2 gap-1">${renderStars(ratingInfo.avg)} <span class="text-xs text-gray-500">(${ratingInfo.avg}/${ratingInfo.count})</span></div>
                         <p class="text-gray-600 mb-4 flex-grow font-semibold">${formatCurrency(item.price)}</p>
