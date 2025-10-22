@@ -124,6 +124,38 @@
                 </form>
             </div>
         </div>
+        
+        <!-- Modal Form Pengguna (Admin) -->
+        <div id="user-form-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
+             <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+                <h3 id="user-form-title" class="text-2xl font-bold mb-6 text-gray-800">Tambah Pengguna Baru</h3>
+                <button class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
+                <form id="user-form" class="space-y-4">
+                    <input type="hidden" id="original-username">
+                    <label class="block">
+                        <span class="text-gray-700">Username</span>
+                        <input type="text" id="user-username" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                    </label>
+                    <label class="block">
+                        <span class="text-gray-700">Password</span>
+                        <input type="password" id="user-password" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="Masukkan password baru">
+                    </label>
+                    <label class="block">
+                        <span class="text-gray-700">Role</span>
+                        <select id="user-role" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg bg-white">
+                            <option value="pembeli">Pembeli</option>
+                            <option value="penjual">Penjual</option>
+                        </select>
+                    </label>
+                    <label id="user-name-wrapper" class="block hidden">
+                        <span class="text-gray-700">Nama Kantin</span>
+                        <input type="text" id="user-name" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                    </label>
+                    <p class="text-xs text-gray-500">Password wajib diisi bahkan saat mengedit untuk konfirmasi.</p>
+                    <button type="submit" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-md">Simpan Pengguna</button>
+                </form>
+            </div>
+        </div>
 
         <!-- Modal Konfirmasi -->
         <div id="confirm-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
@@ -183,13 +215,15 @@
         <!-- Modal Admin Dashboard -->
         <div id="admin-dashboard-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
              <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 relative">
-                <h3 class="text-2xl font-bold mb-4 text-gray-800">Admin Dashboard: Kelola Pengguna</h3>
-                <button class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
-                <div class="space-y-3">
-                    <div class="grid grid-cols-4 font-bold text-gray-700 border-b pb-2"><span>Username</span><span>Role</span><span>Nama</span><span>Aksi</span></div>
-                    <div id="user-list" class="space-y-2"></div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Admin Dashboard: Kelola Pengguna</h3>
+                    <button class="close-modal-btn text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
                 </div>
-                <p class="mt-4 text-xs text-red-500">*Fitur Hapus/Edit Pengguna dinonaktifkan di demo ini.</p>
+                <button id="add-user-btn" class="mb-4 py-2 px-4 text-sm font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600 transition shadow-md">+ Tambah Pengguna</button>
+                <div class="space-y-3">
+                    <div class="grid grid-cols-4 font-bold text-gray-700 border-b pb-2 gap-2"><span>Username</span><span>Role</span><span>Nama</span><span>Aksi</span></div>
+                    <div id="user-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                </div>
             </div>
         </div>
 
@@ -213,7 +247,6 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- KONFIGURASI SUPABASE ---
-        // Ganti dengan URL dan Kunci Anonim dari proyek Supabase Anda!
         const SUPABASE_URL = 'https://dmlfijjijvenbydpjeyb.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtbGZpamppanZlbmJ5ZHBqZXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTUxNDQsImV4cCI6MjA3NTk3MTE0NH0.02BBhJ39t_LoXLKiQk45--5ul4duk-qbc2cGJ4Wp0aA';
 
@@ -243,6 +276,7 @@
         const dashboardBtn = document.getElementById('dashboard-btn');
         const sellerDashboardModal = document.getElementById('seller-dashboard-modal');
         const adminDashboardModal = document.getElementById('admin-dashboard-modal');
+        const userFormModal = document.getElementById('user-form-modal');
         const cartModal = document.getElementById('cart-modal');
         
         // --- FUNGSI UTILITAS ---
@@ -280,10 +314,30 @@
             if (error) console.error('Error fetching orders:', error);
             else orders = data;
         }
+        
+        async function renderAdminDashboard() {
+            showLoading();
+            const { data: users, error } = await db.from('users').select('*').neq('role', 'admin').order('username');
+            if (error) {
+                console.error('Error fetching users:', error);
+            } else {
+                document.getElementById('user-list').innerHTML = users.map(user => `
+                    <div class="grid grid-cols-4 items-center bg-white p-2 rounded text-sm gap-2">
+                        <span>${user.username}</span>
+                        <span class="capitalize">${user.role}</span>
+                        <span>${user.name || '-'}</span>
+                        <div class="flex gap-2">
+                            <button class="edit-user-btn text-blue-600 hover:underline text-xs font-semibold" data-username="${user.username}">Edit</button>
+                            <button class="delete-user-btn text-red-600 hover:underline text-xs font-semibold" data-username="${user.username}">Hapus</button>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-gray-500 text-sm p-2">Belum ada pengguna.</p>';
+            }
+            hideLoading();
+        }
 
         // --- FUNGSI LOGIN & SETUP UI ---
         const setupUIForRole = () => {
-            // Sembunyikan semua elemen kontrol terlebih dahulu
             dashboardBtn.classList.add('hidden');
             cartIconWrapper.classList.add('hidden');
             sellerControls.classList.add('hidden');
@@ -408,9 +462,9 @@
             };
 
             let result;
-            if (id) { // Update
+            if (id) {
                 result = await db.from('menu').update(menuData).eq('id', id);
-            } else { // Insert
+            } else {
                 result = await db.from('menu').insert(menuData);
             }
 
@@ -504,7 +558,48 @@
             hideLoading();
             hideModal(ratingModal);
         });
+        
+        document.getElementById('user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const originalUsername = document.getElementById('original-username').value;
+            
+            const userData = {
+                username: document.getElementById('user-username').value,
+                password: document.getElementById('user-password').value,
+                role: document.getElementById('user-role').value,
+                name: document.getElementById('user-role').value === 'penjual' ? document.getElementById('user-name').value : null,
+            };
+            
+            if (!userData.password) {
+                alert('Password wajib diisi!');
+                hideLoading();
+                return;
+            }
 
+            let result;
+            if (originalUsername) {
+                result = await db.from('users').update({
+                    password: userData.password,
+                    role: userData.role,
+                    name: userData.name
+                }).eq('username', originalUsername);
+            } else {
+                result = await db.from('users').insert(userData);
+            }
+
+            if (result.error) {
+                alert('Gagal menyimpan pengguna: ' + result.error.message);
+            }
+
+            hideModal(userFormModal);
+            hideLoading();
+        });
+
+        document.getElementById('user-role').addEventListener('change', (e) => {
+            document.getElementById('user-name-wrapper').classList.toggle('hidden', e.target.value !== 'penjual');
+        });
+        
         // Event listeners untuk tombol-tombol lain dan modal
         document.getElementById('logout-btn').addEventListener('click', logout);
         document.getElementById('add-menu-btn').addEventListener('click', () => {
@@ -516,13 +611,7 @@
         
         dashboardBtn.addEventListener('click', async () => {
             if(currentUser.role === 'admin') {
-                const { data: users } = await db.from('users').select('*');
-                document.getElementById('user-list').innerHTML = users.map(user => 
-                    `<div class="grid grid-cols-4 items-center bg-white p-2 rounded text-sm">
-                        <span>${user.username}</span><span class="capitalize">${user.role}</span>
-                        <span>${user.name || '-'}</span><button class="text-gray-400 cursor-not-allowed">Hapus*</button>
-                    </div>`
-                ).join('');
+                await renderAdminDashboard();
                 showModal(adminDashboardModal);
             }
             if(currentUser.role === 'penjual') {
@@ -534,6 +623,54 @@
                  document.getElementById('sales-list').innerHTML = sellerOrders.length ? sellerOrders.map(item => `<div class="bg-gray-100 p-3 rounded-lg"><div class="flex justify-between font-semibold"><span>${item.name} (x${item.quantity})</span><span>${formatCurrency(item.price * item.quantity)}</span></div><div class="text-sm text-gray-500">Dipesan oleh: ${item.buyer}</div></div>`).join('') : '<p class="text-gray-500">Belum ada penjualan.</p>';
                  hideLoading();
                  showModal(sellerDashboardModal);
+            }
+        });
+        
+        adminDashboardModal.addEventListener('click', async (e) => {
+            const button = e.target;
+            const username = button.dataset.username;
+
+            if (button.id === 'add-user-btn') {
+                const form = document.getElementById('user-form');
+                form.reset();
+                document.getElementById('user-form-title').textContent = 'Tambah Pengguna Baru';
+                document.getElementById('original-username').value = '';
+                document.getElementById('user-username').disabled = false;
+                document.getElementById('user-name-wrapper').classList.add('hidden');
+                showModal(userFormModal);
+            } else if (username) {
+                if (button.classList.contains('delete-user-btn')) {
+                    const confirmModal = document.getElementById('confirm-modal');
+                    document.getElementById('confirm-modal-title').textContent = 'Konfirmasi Hapus';
+                    document.getElementById('confirm-modal-text').textContent = `Yakin ingin menghapus pengguna "${username}"?`;
+                    confirmCallback = async () => {
+                        showLoading();
+                        await db.from('users').delete().eq('username', username);
+                        hideLoading();
+                    };
+                    showModal(confirmModal);
+                } else if (button.classList.contains('edit-user-btn')) {
+                    const { data: user } = await db.from('users').select('*').eq('username', username).single();
+                    if (user) {
+                        document.getElementById('user-form-title').textContent = 'Edit Pengguna';
+                        document.getElementById('original-username').value = user.username;
+                        const usernameInput = document.getElementById('user-username');
+                        usernameInput.value = user.username;
+                        usernameInput.disabled = true;
+                        document.getElementById('user-password').value = ''; // Password should be re-entered
+                        document.getElementById('user-role').value = user.role;
+                        const nameWrapper = document.getElementById('user-name-wrapper');
+                        const nameInput = document.getElementById('user-name');
+                        if(user.role === 'penjual') {
+                            nameInput.value = user.name;
+                            nameWrapper.classList.remove('hidden');
+                        } else {
+                            nameInput.value = '';
+                            nameWrapper.classList.add('hidden');
+                        }
+                        showModal(userFormModal);
+                    }
+                }
             }
         });
 
@@ -615,9 +752,17 @@
               .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
                   fetchOrders().then(() => {
                       if (currentUser?.role === 'penjual' && !sellerDashboardModal.classList.contains('hidden')) {
-                          dashboardBtn.click(); // re-render dashboard
+                          dashboardBtn.click();
                       }
                   });
+              })
+              .subscribe();
+              
+            db.channel('public-users-channel')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
+                  if (currentUser?.role === 'admin' && !adminDashboardModal.classList.contains('hidden')) {
+                      renderAdminDashboard();
+                  }
               })
               .subscribe();
         }
@@ -627,4 +772,3 @@
     </script>
 </body>
 </html>
-
