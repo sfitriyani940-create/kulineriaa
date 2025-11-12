@@ -19,52 +19,44 @@
         .star-rating input { display: none; }
         .star-rating label { font-size: 24px; color: #ccc; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #facc15; }
-        .food-icon {
-            position: absolute;
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 1;
-        }
+        .food-icon { position: absolute; opacity: 0.15; pointer-events: none; z-index: 1; }
+        /* Kustomisasi scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #DC2626; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #B91C1C; }
     </style>
 </head>
 <body>
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 hidden">
+    <!-- Loading Overlay (Z-Index Paling Tinggi) -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-60 hidden">
         <div class="flex flex-col items-center p-6 bg-white rounded-xl shadow-2xl">
             <svg class="animate-spin h-8 w-8 text-red-600 mb-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span class="text-gray-700 font-medium">Memproses...</span>
+            <span id="loading-text" class="text-gray-700 font-medium">Memproses...</span>
         </div>
     </div>
 
     <!-- 1. Login Screen -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-red-50 relative overflow-hidden">
-        <!-- Hiasan Makanan di Latar Belakang -->
-        <!--  -->
+        <!-- Hiasan Makanan -->
         <svg class="food-icon w-32 h-32 text-red-200 top-10 left-10 transform -rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C11.17 2 10.5 2.67 10.5 3.5V6H4.5C3.67 6 3 6.67 3 7.5V10.5C3 11.33 3.67 12 4.5 12H19.5C20.33 12 21 11.33 21 10.5V7.5C21 6.67 20.33 6 19.5 6H13.5V3.5C13.5 2.67 12.83 2 12 2ZM5 14C4.45 14 4 14.45 4 15V21H6V15C6 14.45 5.55 14 5 14ZM9 14C8.45 14 8 14.45 8 15V21H10V15C10 14.45 9.55 14 9 14ZM12 14C11.45 14 11 14.45 11 15V21H13V15C13 14.45 12.55 14 12 14ZM15 14C14.45 14 14 14.45 14 15V21H16V15C16 14.45 15.55 14 15 14ZM19 14C18.45 14 18 14.45 18 15V21H20V15C20 14.45 19.55 14 19 14Z" /></svg>
         <svg class="food-icon w-24 h-24 text-amber-200 bottom-16 right-12 transform rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.78 11.78L18.36 10.36L19.78 8.95C20.56 8.17 20.56 6.9 19.78 6.12L17.88 4.22C17.1 3.44 15.83 3.44 15.05 4.22L13.64 5.64L15.05 7.05L16.46 5.64L17.17 6.34L15.76 7.76L17.17 9.17L18.59 7.76L19.29 8.46L17.88 9.88L19.29 11.29L20.71 9.88L21.41 10.59L20 12L18.59 10.59L17.17 12L15.76 10.59L14.34 12L12.93 10.59L11.5 12L10.09 10.59L8.68 12L7.27 10.59L5.86 12L4.45 10.59L3.03 12L1.62 10.59L4.45 7.76L3.03 6.34L2.33 7.05L3.74 8.46L2.33 9.88L3.74 11.29L5.16 9.88L5.86 10.59L7.27 9.17L5.86 7.76L7.27 6.34L8.68 7.76L10.09 6.34L11.5 7.76L12.91 6.34L14.33 7.76L15.74 6.34L14.33 4.93L15.03 4.22L16.45 5.64L17.86 4.22L18.57 4.93L17.15 6.34L18.57 7.76L20 6.34L20.71 7.05L19.29 8.46L20.71 9.88L22.12 8.46C22.9 7.68 22.9 6.41 22.12 5.64L20.22 3.73C19.44 2.95 18.17 2.95 17.39 3.73L16 5.12V4C16 3.45 15.55 3 15 3H8C7.45 3 7 3.45 7 4V13.27L2.73 17.54C2.15 18.12 2.15 19.07 2.73 19.65L3.09 20.01C3.67 20.59 4.62 20.59 5.2 20.01L9.47 15.74H18C18.55 15.74 19 15.29 19 14.74V13H19.78C20.56 13 21.18 12.38 21.18 11.6C21.18 11.23 21.01 10.88 20.73 10.6L19.78 11.78Z"/></svg>
-
+        
         <div class="w-full max-w-sm p-8 bg-white rounded-2xl shadow-xl z-10 text-center">
-             <!-- Ikon Utama -->
              <div class="flex justify-center items-center mb-4">
                  <svg class="w-16 h-16 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.362-3.797z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214C15.63 5.372 15.89 5.544 16.138 5.728 17.935 7.166 19.5 9.358 19.5 12a8.25 8.25 0 01-5.962 7.952 8.257 8.257 0 01-1.28-1.427z" />
                  </svg>
             </div>
-            
-            <h2 class="text-4xl font-extrabold text-gray-900 font-title">Kulineria Smanida</h2>
+            <h2 id="login-title" class="text-4xl font-extrabold text-gray-900 font-title">Kulineria Smanida</h2>
             <p class="text-2xl text-orange-500 mt-2 mb-8 font-subtitle">Jajanan favorit, tinggal klik!</p>
-            
             <form id="login-form" class="space-y-4">
                 <input type="text" id="username-input" placeholder="Username" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-red-500 focus:border-red-500">
                 <input type="password" id="password-input" placeholder="Password" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-red-500 focus:border-red-500">
-                
                 <p id="login-error" class="text-red-600 text-sm hidden">Login gagal. Cek username dan password.</p>
-                
-                <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition duration-150 shadow-md">
-                    Masuk
-                </button>
+                <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition duration-150 shadow-md">Masuk</button>
             </form>
         </div>
     </div>
@@ -72,49 +64,81 @@
     <!-- 2. Main App Container (Hidden until login) -->
     <div id="app-container" class="min-h-screen hidden">
         <!-- Header -->
-        <header class="bg-white shadow-lg sticky top-0 z-10">
+        <header class="bg-white shadow-lg sticky top-0 z-30">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Kulineria Smanida</h1>
+                    <h1 id="app-title" class="text-2xl font-bold text-gray-800">Kulineria Smanida</h1>
                     <p id="header-subtitle" class="text-sm text-gray-500 mt-1"></p>
                 </div>
-
                 <div class="flex items-center space-x-3">
-                    <button id="dashboard-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-orange-800 text-white hover:bg-orange-900 transition shadow-md">
-                        Dashboard
-                    </button>
+                    <!-- Tombol Admin -->
+                    <button id="admin-sales-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-orange-800 text-white hover:bg-orange-900 transition shadow-md">Statistik Penjualan</button>
+                    <button id="admin-users-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition shadow-md">Kelola Pengguna</button>
+                    <button id="admin-menu-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition shadow-md">Lihat Semua Menu</button>
                     
-                    <div id="seller-controls" class="flex space-x-2 hidden">
-                        <button id="add-menu-btn" class="py-2 px-4 text-sm font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600 transition shadow-md">
-                            + Tambah Menu
-                        </button>
-                    </div>
-
-                    <!-- Cart Icon -->
+                    <!-- Tombol Penjual -->
+                    <button id="seller-dashboard-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-orange-800 text-white hover:bg-orange-900 transition shadow-md">Dashboard Penjualan</button>
+                    <button id="add-menu-btn" class="hidden py-2 px-4 text-sm font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600 transition shadow-md">+ Tambah Menu</button>
+                    
+                    <!-- Ikon Keranjang Pembeli -->
                     <div id="cart-icon-wrapper" class="relative cursor-pointer hidden">
                         <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full transform scale-0 origin-top-right">0</span>
                     </div>
 
-                    <button id="logout-btn" class="py-2 px-4 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition shadow-sm">
-                        Keluar
-                    </button>
+                    <button id="logout-btn" class="py-2 px-4 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition shadow-sm">Keluar</button>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-            <h2 id="menu-title" class="text-3xl font-extrabold text-gray-900 mb-6">Menu Hari Ini</h2>
+            <div class="flex items-center mb-6">
+                <button id="back-to-stores-btn" class="hidden text-red-600 hover:text-red-800 mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                </button>
+                <h2 id="menu-title" class="text-3xl font-extrabold text-gray-900">Menu Hari Ini</h2>
+            </div>
+            
+            <!-- Tampilan Dashboard Admin -->
+            <div id="admin-sales-view" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Ringkasan Penjualan</h3>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-red-50 p-4 rounded-xl">
+                            <p class="text-sm text-red-700">Total Pendapatan</p>
+                            <p id="stats-total-revenue" class="text-3xl font-extrabold text-red-900">Rp 0</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl">
+                            <p class="text-sm text-blue-700">Total Pesanan</p>
+                            <p id="stats-total-orders" class="text-3xl font-extrabold text-blue-900">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Pembeli Teratas</h3>
+                    <div id="stats-top-buyers" class="space-y-2">
+                        <p class="text-gray-500">Memuat...</p>
+                    </div>
+                </div>
+                <div class="md:col-span-3 bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Pendapatan per Toko</h3>
+                    <div id="stats-store-revenue" class="space-y-3">
+                        <p class="text-gray-500">Memuat...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tampilan Daftar Menu/Toko -->
             <div id="menu-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <!-- Menu items rendered by JS -->
             </div>
         </main>
     </div>
 
-    <!-- Modals are placed here -->
+    <!-- Modals -->
     <div id="all-modals-container">
-        <!-- Modal Keranjang -->
+        <!-- Modal Keranjang (z-40) -->
         <div id="cart-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
             <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 relative">
                 <h3 class="text-2xl font-bold mb-4 text-gray-800">Keranjang Belanja</h3>
@@ -131,36 +155,38 @@
             </div>
         </div>
 
-        <!-- Modal Form Menu -->
+        <!-- Modal Form Menu (z-40) -->
         <div id="menu-form-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
              <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
                 <h3 id="menu-form-title" class="text-2xl font-bold mb-6 text-gray-800">Tambah Menu Baru</h3>
                 <button class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
                 <form id="menu-form" class="space-y-4">
                     <input type="hidden" id="menu-id">
+                    <input type="hidden" id="menu-img-url"> <!-- Menyimpan URL gambar saat edit -->
                     <label class="block"><span class="text-gray-700">Nama Makanan</span><input type="text" id="menu-name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
                     <label class="block"><span class="text-gray-700">Harga (Rp)</span><input type="number" id="menu-price" required min="1000" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
-                    <label class="block"><span class="text-gray-700">URL Gambar</span><input type="url" id="menu-img" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" value="https://placehold.co/300x200/fb923c/ffffff?text=Makanan"></label>
+                    <label class="block">
+                        <span class="text-gray-700">Unggah Gambar</span>
+                        <input type="file" id="menu-img-upload" accept="image/*" class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                    </label>
+                    <div id="current-img-preview" class="hidden">
+                        <p class="text-sm text-gray-500">Gambar saat ini:</p>
+                        <img src="" id="current-img" class="w-32 h-32 object-cover rounded-lg mt-1 border">
+                    </div>
                     <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-md">Simpan Menu</button>
                 </form>
             </div>
         </div>
         
-        <!-- Modal Form Pengguna (Admin) -->
-        <div id="user-form-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
+        <!-- Modal Form Pengguna (Admin) (z-50, di atas dashboard) -->
+        <div id="user-form-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-50 p-4">
              <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
                 <h3 id="user-form-title" class="text-2xl font-bold mb-6 text-gray-800">Tambah Pengguna Baru</h3>
                 <button class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
                 <form id="user-form" class="space-y-4">
                     <input type="hidden" id="original-username">
-                    <label class="block">
-                        <span class="text-gray-700">Username</span>
-                        <input type="text" id="user-username" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                    </label>
-                    <label class="block">
-                        <span class="text-gray-700">Password</span>
-                        <input type="password" id="user-password" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="Masukkan password baru">
-                    </label>
+                    <label class="block"><span class="text-gray-700">Username</span><input type="text" id="user-username" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
+                    <label class="block"><span class="text-gray-700">Password</span><input type="password" id="user-password" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="Masukkan password baru"></label>
                     <label class="block">
                         <span class="text-gray-700">Role</span>
                         <select id="user-role" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg bg-white">
@@ -168,18 +194,15 @@
                             <option value="penjual">Penjual</option>
                         </select>
                     </label>
-                    <label id="user-name-wrapper" class="block hidden">
-                        <span class="text-gray-700">Nama Kantin</span>
-                        <input type="text" id="user-name" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                    </label>
+                    <label id="user-name-wrapper" class="block hidden"><span class="text-gray-700">Nama Kantin</span><input type="text" id="user-name" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></label>
                     <p class="text-xs text-gray-500">Password wajib diisi bahkan saat mengedit untuk konfirmasi.</p>
                     <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-md">Simpan Pengguna</button>
                 </form>
             </div>
         </div>
 
-        <!-- Modal Konfirmasi -->
-        <div id="confirm-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
+        <!-- Modal Konfirmasi (z-50, di atas modal lain) -->
+        <div id="confirm-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-50 p-4">
             <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 relative">
                 <h3 id="confirm-modal-title" class="text-xl font-bold mb-4 text-gray-800">Konfirmasi Tindakan</h3>
                 <p id="confirm-modal-text" class="mb-6 text-gray-600">Apakah Anda yakin?</p>
@@ -190,7 +213,7 @@
             </div>
         </div>
         
-        <!-- Modal QRIS Payment -->
+        <!-- Modal QRIS Payment (z-40) -->
         <div id="qris-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
              <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-800">Pembayaran QRIS</h3>
@@ -209,7 +232,7 @@
             </div>
         </div>
         
-        <!-- Modal Payment Success -->
+        <!-- Modal Payment Success (z-40) -->
         <div id="payment-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
             <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative text-center">
                 <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -219,7 +242,7 @@
             </div>
         </div>
 
-        <!-- Modal Rating & Review -->
+        <!-- Modal Rating & Review (z-40) -->
         <div id="rating-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
             <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 relative">
                 <h3 class="text-2xl font-bold mb-4 text-gray-800">Beri Ulasan Pesanan Anda</h3>
@@ -233,8 +256,8 @@
             </div>
         </div>
 
-        <!-- Modal Admin Dashboard -->
-        <div id="admin-dashboard-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
+        <!-- Modal Admin Dashboard: Kelola Pengguna (z-40) -->
+        <div id="admin-users-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
              <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 relative">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-2xl font-bold text-gray-800">Admin Dashboard: Kelola Pengguna</h3>
@@ -243,12 +266,12 @@
                 <button id="add-user-btn" class="mb-4 py-2 px-4 text-sm font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600 transition shadow-md">+ Tambah Pengguna</button>
                 <div class="space-y-3">
                     <div class="grid grid-cols-4 font-bold text-gray-700 border-b pb-2 gap-2"><span>Username</span><span>Role</span><span>Nama</span><span>Aksi</span></div>
-                    <div id="user-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                    <div id="user-list" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Seller Dashboard -->
+        <!-- Modal Seller Dashboard (z-40) -->
         <div id="seller-dashboard-modal" class="modal fixed inset-0 hidden flex items-center justify-center z-40 p-4">
              <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-6 relative">
                 <h3 id="seller-dashboard-title" class="text-2xl font-bold mb-4 text-gray-800">Dashboard Penjualan</h3>
@@ -268,11 +291,25 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- KONFIGURASI SUPABASE ---
+        // Ganti dengan URL dan Kunci Anonim dari proyek Supabase Anda!
         const SUPABASE_URL = 'https://dmlfijjijvenbydpjeyb.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtbGZpamppanZlbmJ5ZHBqZXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTUxNDQsImV4cCI6MjA3NTk3MTE0NH0.02BBhJ39t_LoXLKiQk45--5ul4duk-qbc2cGJ4Wp0aA';
+        const STORAGE_BUCKET = 'menu_images'; // Nama bucket Anda
 
-        const { createClient } = supabase;
-        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let db;
+        try {
+             if (!SUPABASE_URL || SUPABASE_URL.includes('example') || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('example')) {
+                console.warn("SUPABASE_URL atau SUPABASE_ANON_KEY belum diatur. Silakan cek panduan.md.");
+                // throw new Error("Konfigurasi Supabase belum diatur.");
+            }
+            const { createClient } = supabase;
+            db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (error) {
+            console.error("Gagal menginisialisasi Supabase:", error);
+            alert("Gagal terhubung ke database. Cek konsol untuk detail.");
+            return;
+        }
+
 
         // --- STATE APLIKASI ---
         let currentUser = null;
@@ -281,27 +318,46 @@
         let orders = [];
         let confirmCallback = () => {};
         let lastOrder = { items: [], studentName: '' };
+        let buyerView = 'store-list'; // 'store-list' or 'menu-list'
+        let selectedSeller = null;
         
         // --- DOM ELEMENTS ---
         const loginScreen = document.getElementById('login-screen');
         const appContainer = document.getElementById('app-container');
         const loginForm = document.getElementById('login-form');
         const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
         const allModals = document.querySelectorAll('.modal');
         const menuList = document.getElementById('menu-list');
+        const appTitle = document.getElementById('app-title');
         const headerSubtitle = document.getElementById('header-subtitle');
         const menuTitle = document.getElementById('menu-title');
         const cartIconWrapper = document.getElementById('cart-icon-wrapper');
         const cartCount = document.getElementById('cart-count');
-        const sellerControls = document.getElementById('seller-controls');
-        const dashboardBtn = document.getElementById('dashboard-btn');
+        
+        // Buttons
+        const adminSalesBtn = document.getElementById('admin-sales-btn');
+        const adminUsersBtn = document.getElementById('admin-users-btn');
+        const adminMenuBtn = document.getElementById('admin-menu-btn');
+        const sellerDashboardBtn = document.getElementById('seller-dashboard-btn');
+        const addMenuBtn = document.getElementById('add-menu-btn');
+        const backToStoresBtn = document.getElementById('back-to-stores-btn');
+        
+        // Views
+        const adminSalesView = document.getElementById('admin-sales-view');
+
+        // Modals
         const sellerDashboardModal = document.getElementById('seller-dashboard-modal');
-        const adminDashboardModal = document.getElementById('admin-dashboard-modal');
+        const adminUsersModal = document.getElementById('admin-users-modal');
         const userFormModal = document.getElementById('user-form-modal');
         const cartModal = document.getElementById('cart-modal');
+        const menuFormModal = document.getElementById('menu-form-modal');
         
         // --- FUNGSI UTILITAS ---
-        const showLoading = () => loadingOverlay.classList.remove('hidden');
+        const showLoading = (text = "Memproses...") => {
+            loadingText.textContent = text;
+            loadingOverlay.classList.remove('hidden');
+        }
         const hideLoading = () => loadingOverlay.classList.add('hidden');
         const showModal = (modalEl) => modalEl.classList.remove('hidden');
         const hideModal = (modalEl) => modalEl.classList.add('hidden');
@@ -326,7 +382,7 @@
             const { data, error } = await db.from('menu').select('*').order('created_at');
             if (error) console.error('Error fetching menu:', error);
             else menu = data;
-            renderMenu();
+            renderUI(); // Render ulang UI utama
             updateCartSummary();
         }
 
@@ -336,7 +392,7 @@
             else orders = data;
         }
         
-        async function renderAdminDashboard() {
+        async function renderAdminUsersDashboard() {
             showLoading();
             const { data: users, error } = await db.from('users').select('*').neq('role', 'admin').order('username');
             if (error) {
@@ -356,30 +412,94 @@
             }
             hideLoading();
         }
+        
+        async function renderAdminSalesDashboard() {
+            showLoading("Memuat statistik...");
+            await fetchOrders();
+            
+            let totalRevenue = 0;
+            let totalOrders = orders.length;
+            const buyerSpending = {};
+            const storeRevenue = {};
+
+            orders.forEach(order => {
+                (order.items || []).forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    totalRevenue += itemTotal;
+                    
+                    // Pendapatan per Toko
+                    storeRevenue[item.seller] = (storeRevenue[item.seller] || 0) + itemTotal;
+                    
+                    // Pengeluaran per Pembeli
+                    buyerSpending[order.buyer] = (buyerSpending[order.buyer] || 0) + itemTotal;
+                });
+            });
+
+            // Tampilkan Total
+            document.getElementById('stats-total-revenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('stats-total-orders').textContent = totalOrders;
+
+            // Tampilkan Toko Teratas
+            const sortedStores = Object.entries(storeRevenue).sort((a, b) => b[1] - a[1]);
+            document.getElementById('stats-store-revenue').innerHTML = sortedStores.length ? sortedStores.map(([name, revenue]) => `
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="font-semibold text-gray-700">${name || 'Toko Dihapus'}</span>
+                    <span class="font-bold text-green-700">${formatCurrency(revenue)}</span>
+                </div>
+            `).join('') : '<p class="text-gray-500">Belum ada penjualan.</p>';
+
+            // Tampilkan Pembeli Teratas
+            const sortedBuyers = Object.entries(buyerSpending).sort((a, b) => b[1] - a[1]).slice(0, 3); // Top 3
+             document.getElementById('stats-top-buyers').innerHTML = sortedBuyers.length ? sortedBuyers.map(([name, spending], index) => `
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full ${index === 0 ? 'bg-amber-400' : 'bg-gray-300'} text-xs font-bold">${index + 1}</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">${name}</p>
+                        <p class="text-sm text-gray-500">${formatCurrency(spending)}</p>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-gray-500">Belum ada pembeli.</p>';
+
+            hideLoading();
+        }
+
 
         // --- FUNGSI LOGIN & SETUP UI ---
         const setupUIForRole = () => {
-            dashboardBtn.classList.add('hidden');
-            cartIconWrapper.classList.add('hidden');
-            sellerControls.classList.add('hidden');
+            // Sembunyikan semua elemen kontrol
+            [adminSalesBtn, adminUsersBtn, adminMenuBtn, sellerDashboardBtn, addMenuBtn, cartIconWrapper, adminSalesView].forEach(el => el.classList.add('hidden'));
+            menuList.classList.remove('hidden');
+            menuTitle.classList.remove('hidden');
+            backToStoresBtn.classList.add('hidden');
             
             if (currentUser.role === 'admin') {
+                appTitle.textContent = 'Kulineria Smanida (Admin)';
                 headerSubtitle.textContent = `Selamat datang, Admin!`;
-                menuTitle.textContent = 'Semua Menu (Tampilan Admin)';
-                dashboardBtn.textContent = 'Kelola Pengguna';
-                dashboardBtn.classList.remove('hidden');
+                adminSalesBtn.classList.remove('hidden');
+                adminUsersBtn.classList.remove('hidden');
+                adminMenuBtn.classList.remove('hidden');
+                
+                // Tampilan default Admin adalah Statistik
+                menuList.classList.add('hidden');
+                menuTitle.classList.add('hidden');
+                adminSalesView.classList.remove('hidden');
+                renderAdminSalesDashboard();
+
             } else if (currentUser.role === 'penjual') {
-                headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`;
+                appTitle.textContent = currentUser.name; // Nama Toko di Header
+                headerSubtitle.textContent = 'Kelola menu dan pesanan Anda';
                 menuTitle.textContent = 'Menu Anda';
-                sellerControls.classList.remove('hidden');
-                dashboardBtn.textContent = 'Dashboard Penjualan';
-                dashboardBtn.classList.remove('hidden');
+                sellerDashboardBtn.classList.remove('hidden');
+                addMenuBtn.classList.remove('hidden');
+                
             } else if (currentUser.role === 'pembeli') {
+                appTitle.textContent = 'Kulineria Smanida';
                 headerSubtitle.textContent = `Halo, ${currentUser.username}. Mau jajan apa hari ini?`;
-                menuTitle.textContent = 'Menu Hari Ini';
                 cartIconWrapper.classList.remove('hidden');
+                buyerView = 'store-list'; // Reset ke daftar toko
+                selectedSeller = null;
             }
-            renderMenu();
+            renderUI(); // Render tampilan utama
             updateCartSummary();
         };
 
@@ -387,43 +507,88 @@
             localStorage.removeItem(`kulineriaCart_${currentUser.username}`);
             currentUser = null;
             cart = {};
+            appTitle.textContent = 'Kulineria Smanida'; // Reset judul
             showScreen('login-screen');
         };
 
-        // --- FUNGSI RENDER ---
-        const renderMenu = () => {
+        // --- FUNGSI RENDER UI UTAMA ---
+        const renderUI = () => {
             if (!currentUser) return;
-            let menuToRender = menu;
-            if (currentUser.role === 'penjual') {
-                menuToRender = menu.filter(item => item.seller === currentUser.name);
+            
+            if (currentUser.role === 'pembeli') {
+                renderBuyerUI();
+            } else if (currentUser.role === 'penjual') {
+                renderSellerMenu();
+            } else if (currentUser.role === 'admin') {
+                renderAdminMenu(); // Tampilan menu admin (jika dibuka)
             }
+        };
+        
+        const renderBuyerUI = () => {
+            if (buyerView === 'store-list') {
+                menuTitle.textContent = 'Pilih Kantin';
+                backToStoresBtn.classList.add('hidden');
+                const stores = [...new Set(menu.map(item => item.seller))];
+                if (stores.length === 0) {
+                    menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">Belum ada kantin yang buka.</p></div>`;
+                    return;
+                }
+                menuList.innerHTML = stores.map(seller => `
+                    <div class="store-card card rounded-2xl p-6 shadow-md flex flex-col justify-center items-center bg-white transition-transform transform hover:-translate-y-1 cursor-pointer" data-seller="${seller}">
+                        <svg class="w-16 h-16 text-red-500 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <h3 class="font-bold text-xl text-gray-800 text-center">${seller}</h3>
+                    </div>
+                `).join('');
+            } else if (buyerView === 'menu-list') {
+                menuTitle.textContent = selectedSeller;
+                backToStoresBtn.classList.remove('hidden');
+                const sellerMenu = menu.filter(item => item.seller === selectedSeller);
+                if (sellerMenu.length === 0) {
+                    menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">Kantin ini belum memiliki menu.</p></div>`;
+                    return;
+                }
+                menuList.innerHTML = sellerMenu.map(item => renderMenuItemCard(item, 'pembeli')).join('');
+            }
+        };
 
-            if (menuToRender.length === 0) {
-                menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">${currentUser.role === 'pembeli' ? 'Menu belum tersedia.' : 'Anda belum punya menu.'}</p></div>`;
+        const renderSellerMenu = () => {
+            const sellerMenu = menu.filter(item => item.seller === currentUser.name);
+            if (sellerMenu.length === 0) {
+                menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">Anda belum punya menu. Klik '+ Tambah Menu' untuk memulai.</p></div>`;
                 return;
             }
+            menuList.innerHTML = sellerMenu.map(item => renderMenuItemCard(item, 'penjual')).join('');
+        };
+        
+        const renderAdminMenu = () => {
+            menuTitle.textContent = 'Semua Menu (Tampilan Admin)';
+             if (menu.length === 0) {
+                menuList.innerHTML = `<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><p class="text-gray-500">Belum ada menu di database.</p></div>`;
+                return;
+            }
+            menuList.innerHTML = menu.map(item => renderMenuItemCard(item, 'admin')).join('');
+        }
 
-            menuList.innerHTML = menuToRender.map(item => {
-                const ratingInfo = calculateAverageRating(item.ratings);
-                let buttonsHTML = '';
+        const renderMenuItemCard = (item, role) => {
+            const ratingInfo = calculateAverageRating(item.ratings);
+            let buttonsHTML = '';
 
-                if (currentUser.role === 'pembeli') {
-                    buttonsHTML = `<button class="add-to-cart-btn w-full mt-auto py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-600 hover:bg-red-700 transition-all" data-id="${item.id}">+ Keranjang</button>`;
-                } else if (currentUser.role === 'penjual' && item.seller === currentUser.name) {
-                    buttonsHTML = `<div class="flex gap-2 mt-auto"><button class="edit-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-blue-500 hover:bg-blue-600" data-id="${item.id}">Edit</button><button class="delete-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-500 hover:bg-red-600" data-id="${item.id}">Hapus</button></div>`;
-                }
+            if (role === 'pembeli') {
+                buttonsHTML = `<button class="add-to-cart-btn w-full mt-auto py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-600 hover:bg-red-700 transition-all" data-id="${item.id}">+ Keranjang</button>`;
+            } else if (role === 'penjual') {
+                buttonsHTML = `<div class="flex gap-2 mt-auto"><button class="edit-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-blue-500 hover:bg-blue-600" data-id="${item.id}">Edit</button><button class="delete-btn w-full py-2 px-4 rounded-lg font-semibold text-sm text-white bg-red-500 hover:bg-red-600" data-id="${item.id}">Hapus</button></div>`;
+            }
 
-                return `<div class="card rounded-2xl p-4 shadow-md flex flex-col bg-white transition-transform transform hover:-translate-y-1">
-                    <img src="${item.img}" alt="${item.name}" class="rounded-lg mb-4 w-full h-40 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x200/ccc/ffffff?text=Error';">
-                    <div class="flex flex-col flex-grow">
-                        <p class="text-xs font-semibold text-orange-800">${item.seller}</p>
-                        <h3 class="font-bold text-lg text-gray-800">${item.name}</h3>
-                        <div class="flex items-center my-2 gap-1">${renderStars(ratingInfo.avg)} <span class="text-xs text-gray-500">(${ratingInfo.avg}/${ratingInfo.count})</span></div>
-                        <p class="text-gray-600 mb-4 flex-grow font-semibold">${formatCurrency(item.price)}</p>
-                        ${buttonsHTML}
-                    </div>
-                </div>`;
-            }).join('');
+            return `<div class="card rounded-2xl p-4 shadow-md flex flex-col bg-white transition-transform transform hover:-translate-y-1">
+                <img src="${item.img}" alt="${item.name}" class="rounded-lg mb-4 w-full h-40 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x200/ccc/ffffff?text=Error';">
+                <div class="flex flex-col flex-grow">
+                    <p class="text-xs font-semibold text-orange-800">${item.seller}</p>
+                    <h3 class="font-bold text-lg text-gray-800">${item.name}</h3>
+                    <div class="flex items-center my-2 gap-1">${renderStars(ratingInfo.avg)} <span class="text-xs text-gray-500">(${ratingInfo.avg}/${ratingInfo.count})</span></div>
+                    <p class="text-gray-600 mb-4 flex-grow font-semibold">${formatCurrency(item.price)}</p>
+                    ${buttonsHTML}
+                </div>
+            </div>`;
         };
         
         const updateCartSummary = () => {
@@ -472,16 +637,65 @@
         
         document.getElementById('menu-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            showLoading();
-            const id = document.getElementById('menu-id').value;
+            showLoading("Menyimpan data...");
             
+            const id = document.getElementById('menu-id').value;
+            const fileInput = document.getElementById('menu-img-upload');
+            const file = fileInput.files[0];
+            let newImageUrl = document.getElementById('menu-img-url').value; // Mulai dgn URL lama (jika edit)
+
+            // 1. Proses Upload Gambar (jika ada file baru)
+            if (file) {
+                showLoading("Mengunggah gambar...");
+                const filePath = `public/${Date.now()}-${file.name}`;
+                const { error: uploadError } = await db.storage
+                    .from(STORAGE_BUCKET)
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    console.error('Error uploading image:', uploadError);
+                    alert('Gagal mengunggah gambar: ' + uploadError.message);
+                    hideLoading();
+                    return;
+                }
+
+                // Ambil Public URL
+                const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+                const newPublicUrl = data.publicUrl;
+
+                // --- FITUR BARU: HAPUS GAMBAR LAMA ---
+                const oldImageUrl = document.getElementById('menu-img-url').value;
+                if (id && oldImageUrl && oldImageUrl !== newPublicUrl) { // Jika ini mode edit, ada gbr lama, & beda
+                    try {
+                        const oldFilePath = `public/${oldImageUrl.split('/').pop()}`;
+                        console.log(`Menghapus gambar lama: ${oldFilePath}`);
+                        await db.storage.from(STORAGE_BUCKET).remove([oldFilePath]);
+                    } catch (deleteError) {
+                        console.warn("Gagal menghapus gambar lama:", deleteError.message);
+                        // Tidak perlu menghentikan proses, lanjutkan menyimpan
+                    }
+                }
+                // --- AKHIR FITUR BARU ---
+                
+                newImageUrl = newPublicUrl; // Tetapkan URL baru untuk disimpan
+            }
+            
+            if (!newImageUrl) { // Cek jika tidak ada gambar sama sekali (menu baru, lupa upload)
+                 alert('Harap unggah gambar untuk menu baru.');
+                 hideLoading();
+                 return;
+            }
+
+            // 2. Siapkan Data Menu
             const menuData = {
                 name: document.getElementById('menu-name').value,
                 price: parseInt(document.getElementById('menu-price').value),
-                img: document.getElementById('menu-img').value,
+                img: newImageUrl, // Simpan URL yang benar (baru atau lama)
                 seller: currentUser.name,
             };
 
+            // 3. Simpan data ke Tabel 'menu'
+            showLoading("Menyimpan menu...");
             let result;
             if (id) {
                 result = await db.from('menu').update(menuData).eq('id', id);
@@ -491,15 +705,26 @@
 
             if (result.error) console.error('Error saving menu:', result.error);
             
-            hideModal(document.getElementById('menu-form-modal'));
+            hideModal(menuFormModal);
             hideLoading();
         });
         
         menuList.addEventListener('click', (e) => {
             const button = e.target.closest('[data-id]');
+            const storeCard = e.target.closest('.store-card');
+            
+            // Klik pada Toko (Pembeli)
+            if (storeCard) {
+                selectedSeller = storeCard.dataset.seller;
+                buyerView = 'menu-list';
+                renderUI();
+                return;
+            }
+            
             if (!button) return;
             const id = button.dataset.id;
             
+            // Klik pada Tombol Aksi Menu
             if (button.classList.contains('add-to-cart-btn')) {
                 cart[id] = cart[id] ? { quantity: cart[id].quantity + 1 } : { quantity: 1 };
                 button.textContent = 'Ditambahkan ✓';
@@ -515,8 +740,11 @@
                 document.getElementById('menu-id').value = item.id;
                 document.getElementById('menu-name').value = item.name;
                 document.getElementById('menu-price').value = item.price;
-                document.getElementById('menu-img').value = item.img;
-                showModal(document.getElementById('menu-form-modal'));
+                document.getElementById('menu-img-url').value = item.img; // Simpan URL lama
+                document.getElementById('current-img').src = item.img;
+                document.getElementById('current-img-preview').classList.remove('hidden');
+                document.getElementById('menu-img-upload').value = null; // Kosongkan file input
+                showModal(menuFormModal);
             } else if (button.classList.contains('delete-btn')) {
                 const item = menu.find(m => m.id == id);
                 const confirmModal = document.getElementById('confirm-modal');
@@ -524,6 +752,17 @@
                 document.getElementById('confirm-modal-text').textContent = `Yakin ingin menghapus "${item.name}"?`;
                 confirmCallback = async () => {
                     showLoading();
+                    
+                    // Hapus gambar dari storage
+                    try {
+                        const filePath = `public/${item.img.split('/').pop()}`;
+                        console.log(`Menghapus gambar: ${filePath}`);
+                        await db.storage.from(STORAGE_BUCKET).remove([filePath]);
+                    } catch (deleteError) {
+                         console.warn("Gagal menghapus gambar:", deleteError.message);
+                    }
+                    
+                    // Hapus data dari database
                     await db.from('menu').delete().eq('id', id);
                     hideLoading();
                 };
@@ -543,7 +782,8 @@
             
             const { error } = await db.from('orders').insert({
                 buyer: currentUser.username,
-                items: lastOrder.items
+                items: lastOrder.items,
+                created_at: new Date().toISOString() // Pastikan ada timestamp
             });
 
             if(error) console.error("Gagal menyimpan pesanan", error);
@@ -609,10 +849,7 @@
                 result = await db.from('users').insert(userData);
             }
 
-            if (result.error) {
-                alert('Gagal menyimpan pengguna: ' + result.error.message);
-            }
-
+            if (result.error) alert('Gagal menyimpan pengguna: ' + result.error.message);
             hideModal(userFormModal);
             hideLoading();
         });
@@ -621,33 +858,56 @@
             document.getElementById('user-name-wrapper').classList.toggle('hidden', e.target.value !== 'penjual');
         });
         
-        // Event listeners untuk tombol-tombol lain dan modal
-        document.getElementById('logout-btn').addEventListener('click', logout);
-        document.getElementById('add-menu-btn').addEventListener('click', () => {
+        // --- Navigasi Admin ---
+        adminSalesBtn.addEventListener('click', () => {
+            adminSalesView.classList.remove('hidden');
+            menuList.classList.add('hidden');
+            menuTitle.classList.add('hidden');
+            renderAdminSalesDashboard();
+        });
+        adminMenuBtn.addEventListener('click', () => {
+            adminSalesView.classList.add('hidden');
+            menuList.classList.remove('hidden');
+            menuTitle.classList.remove('hidden');
+            renderAdminMenu();
+        });
+        adminUsersBtn.addEventListener('click', async () => {
+            await renderAdminUsersDashboard();
+            showModal(adminUsersModal);
+        });
+        
+        // --- Navigasi Penjual ---
+        sellerDashboardBtn.addEventListener('click', async () => {
+             showLoading();
+             await fetchOrders();
+             const sellerOrders = orders.flatMap(order => (order.items || []).filter(item => item.seller === currentUser.name).map(item => ({ ...item, buyer: order.buyer, date: new Date(order.created_at).toLocaleString('id-ID') })));
+             document.getElementById('seller-dashboard-title').textContent = `Dashboard Penjualan (${currentUser.name})`;
+             document.getElementById('total-profit').textContent = formatCurrency(sellerOrders.reduce((sum, item) => sum + item.price * item.quantity, 0));
+             document.getElementById('sales-list').innerHTML = sellerOrders.length ? sellerOrders.map(item => `<div class="bg-gray-100 p-3 rounded-lg"><div class="flex justify-between font-semibold"><span>${item.name} (x${item.quantity})</span><span>${formatCurrency(item.price * item.quantity)}</span></div><div class="text-sm text-gray-500">Dipesan oleh: ${item.buyer}</div></div>`).join('') : '<p class="text-gray-500">Belum ada penjualan.</p>';
+             hideLoading();
+             showModal(sellerDashboardModal);
+        });
+        
+        addMenuBtn.addEventListener('click', () => {
              document.getElementById('menu-form').reset();
              document.getElementById('menu-form-title').textContent = 'Tambah Menu Baru';
              document.getElementById('menu-id').value = '';
-             showModal(document.getElementById('menu-form-modal'));
+             document.getElementById('menu-img-url').value = '';
+             document.getElementById('current-img-preview').classList.add('hidden');
+             showModal(menuFormModal);
         });
         
-        dashboardBtn.addEventListener('click', async () => {
-            if(currentUser.role === 'admin') {
-                await renderAdminDashboard();
-                showModal(adminDashboardModal);
-            }
-            if(currentUser.role === 'penjual') {
-                 showLoading();
-                 await fetchOrders();
-                 const sellerOrders = orders.flatMap(order => (order.items || []).filter(item => item.seller === currentUser.name).map(item => ({ ...item, buyer: order.buyer, date: new Date(order.created_at).toLocaleString('id-ID') })));
-                 document.getElementById('seller-dashboard-title').textContent = `Dashboard Penjualan (${currentUser.name})`;
-                 document.getElementById('total-profit').textContent = formatCurrency(sellerOrders.reduce((sum, item) => sum + item.price * item.quantity, 0));
-                 document.getElementById('sales-list').innerHTML = sellerOrders.length ? sellerOrders.map(item => `<div class="bg-gray-100 p-3 rounded-lg"><div class="flex justify-between font-semibold"><span>${item.name} (x${item.quantity})</span><span>${formatCurrency(item.price * item.quantity)}</span></div><div class="text-sm text-gray-500">Dipesan oleh: ${item.buyer}</div></div>`).join('') : '<p class="text-gray-500">Belum ada penjualan.</p>';
-                 hideLoading();
-                 showModal(sellerDashboardModal);
-            }
+        // --- Navigasi Pembeli ---
+        backToStoresBtn.addEventListener('click', () => {
+            buyerView = 'store-list';
+            selectedSeller = null;
+            renderUI();
         });
         
-        adminDashboardModal.addEventListener('click', async (e) => {
+        // --- Event Listeners Modal ---
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        adminUsersModal.addEventListener('click', async (e) => {
             const button = e.target;
             const username = button.dataset.username;
 
@@ -678,7 +938,7 @@
                         const usernameInput = document.getElementById('user-username');
                         usernameInput.value = user.username;
                         usernameInput.disabled = true;
-                        document.getElementById('user-password').value = ''; // Password should be re-entered
+                        document.getElementById('user-password').value = '';
                         document.getElementById('user-role').value = user.role;
                         const nameWrapper = document.getElementById('user-name-wrapper');
                         const nameInput = document.getElementById('user-name');
@@ -765,6 +1025,8 @@
 
         // --- Inisialisasi & Langganan Realtime ---
         function initializeRealtime() {
+            if (!db) return; // Jangan jalankan jika db gagal inisialisasi
+            
             db.channel('public-menu-channel')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'menu' }, () => fetchMenu())
               .subscribe();
@@ -773,7 +1035,10 @@
               .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
                   fetchOrders().then(() => {
                       if (currentUser?.role === 'penjual' && !sellerDashboardModal.classList.contains('hidden')) {
-                          dashboardBtn.click();
+                          sellerDashboardBtn.click(); // Refresh dashboard penjual
+                      }
+                      if (currentUser?.role === 'admin' && !adminSalesView.classList.contains('hidden')) {
+                          renderAdminSalesDashboard(); // Refresh dashboard admin
                       }
                   });
               })
@@ -781,8 +1046,8 @@
               
             db.channel('public-users-channel')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
-                  if (currentUser?.role === 'admin' && !adminDashboardModal.classList.contains('hidden')) {
-                      renderAdminDashboard();
+                  if (currentUser?.role === 'admin' && !adminUsersModal.classList.contains('hidden')) {
+                      renderAdminUsersDashboard(); // Refresh kelola pengguna
                   }
               })
               .subscribe();
